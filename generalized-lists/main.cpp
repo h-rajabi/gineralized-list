@@ -1,14 +1,43 @@
 #include <iostream>
+#include <fstream>
+#include <vector>
 using namespace std;
+
+void read_from_file();
 
 int main()
 {
-    int x;
-    cin>>x;
-    cout << "Hello World!\n";
+    read_from_file();
     return 0;
 }
 
+void read_from_file(){
+    ifstream InFile("in.txt");
+    if(!InFile) {cout<<"error! :can not open file partner\n";}
+    int numC,numR;
+    InFile >> numC >> numR;
+    vector<vector<int>> farray(numR,vector<int>(numC+1));
+
+    for (int i = 0; i < numR; i++)
+    {
+        for (int j = 0; j < numC+1; j++)
+        {
+            InFile>>farray[i][j];
+        }
+    }
+    
+    InFile.close();
+
+    for (int i = 0; i < numR; i++)
+    {
+        for (int j = 0; j < numC+1; j++)
+        {
+            cout<<farray[i][j]<<"\t";
+        }
+        cout<<endl;
+    }
+    
+}
 
 class node
 {
