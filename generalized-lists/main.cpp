@@ -50,13 +50,29 @@ class node
 class generalizedList
 {
     private:
-        int size=0;
-        node *first=NULL;
-    
+        int size;
+        node *first;
+        void sub_print_list(node* head);
+        void clear_list(node* head);
     public:
-        generalizedList();
+        generalizedList(){
+            this->first=NULL;
+            this->size=0;
+        };
+        ~generalizedList(){
+            clear_list(first);
+        }
+        void setSize(){this->size = this->size+1; };
+        void setFirst(node* f){this->first=f;};
+        int getSize(){return this->size;};
+        node* getFirst(){return this->first;};
+        void add_head(char v);
+        void add_poly(int e);
+        void add_h(float c,int e);
         void par_print_list();
-        void print_list();
+        void print_list(){
+            sub_print_list(this->first);
+        };
 
 };
 
@@ -69,8 +85,58 @@ bool compare_row(const vector<int>& row1, const vector<int>& row2){
 
 int main()
 {
-    read_from_file();
+    // read_from_file();
+    // generalizedList testl;
+    // node *x=new node(4,2);
+    // node *y=new node(5,1);
+    // node *z=new node(8,0);
+
+    // testl.add_head('x');
+    // node *f= testl.getFirst();
+    // f->setLink(x);
+    // x->setLink(y);
+    // y->setLink(z);
+    // testl.print_list();
     return 0;
+}
+
+void generalizedList::sub_print_list(node* head){
+    
+    char v = head->getVariable();
+    while (head)
+    {
+        if(head->getTag() == 2){
+            cout<<"(";
+            sub_print_list(head->getDlink());
+            cout << ")"<<v<<"^"<<head->getExp()<<"+";
+        }
+        else if (head->getTag() != 1){
+            cout<<"+"<<head->getCoef()<<v<<"^"<<head->getExp();
+        }
+        head=head->getLink();
+    }
+    
+}
+
+void generalizedList::clear_list(node* head){
+    while (head)
+    {
+        node* next=head->getLink();
+        if (head->getTag() == 2)
+        {
+            clear_list(head->getDlink());
+        }
+        delete head;
+        head=next;
+    }
+}
+
+void generalizedList::add_head(char v){
+    node* newNode=new node(v);
+    if (!this->first)
+    {
+        this->first=newNode;
+    }
 }
 
 void read_from_file(){
@@ -111,7 +177,7 @@ void read_from_file(){
         cout<<endl;
     }
 
-    
+
 
 }
 
