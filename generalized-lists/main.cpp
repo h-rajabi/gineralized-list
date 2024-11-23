@@ -1,43 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
+
 using namespace std;
 
-void read_from_file();
-
-int main()
-{
-    read_from_file();
-    return 0;
-}
-
-void read_from_file(){
-    ifstream InFile("in.txt");
-    if(!InFile) {cout<<"error! :can not open file partner\n";}
-    int numC,numR;
-    InFile >> numC >> numR;
-    vector<vector<int>> farray(numR,vector<int>(numC+1));
-
-    for (int i = 0; i < numR; i++)
-    {
-        for (int j = 0; j < numC+1; j++)
-        {
-            InFile>>farray[i][j];
-        }
-    }
-    
-    InFile.close();
-
-    for (int i = 0; i < numR; i++)
-    {
-        for (int j = 0; j < numC+1; j++)
-        {
-            cout<<farray[i][j]<<"\t";
-        }
-        cout<<endl;
-    }
-    
-}
 
 class node
 {
@@ -82,12 +49,70 @@ class node
 
 class generalizedList
 {
-private:
-    int size=0;
-    node *first=NULL;
+    private:
+        int size=0;
+        node *first=NULL;
     
-public:
-    generalizedList(){ size +=1; };
-    
+    public:
+        generalizedList();
+        void par_print_list();
+        void print_list();
+
 };
+
+void read_from_file();
+void sort_array();
+bool compare_row(const vector<int>& row1, const vector<int>& row2){
+    return row1.back() > row2.back();
+};
+
+
+int main()
+{
+    read_from_file();
+    return 0;
+}
+
+void read_from_file(){
+    ifstream InFile("in.txt");
+    if(!InFile) {cout<<"error! :can not open file partner\n";}
+    int numC,numR;
+    InFile >> numC >> numR;
+    vector<vector<int>> farray(numR,vector<int>(numC+1));
+    vector<char> variable={'x','y','z','i','e','f','g','h'};
+    for (int i = 0; i < numR; i++)
+    {
+        for (int j = 0; j < numC+1; j++)
+        {
+            InFile>>farray[i][j];
+        }
+    }
+    
+    InFile.close();
+
+    for (int i = 0; i < numR; i++)
+    {
+        for (int j = 0; j < numC+1; j++)
+        {
+            cout<<farray[i][j]<<"\t";
+        }
+        cout<<endl;
+    }
+    cout<<"--------------*-------------"<<endl;
+    
+    sort(farray.begin(),farray.end(),compare_row);
+    
+    for (int i = 0; i < numR; i++)
+    {
+        for (int j = 0; j < numC+1; j++)
+        {
+            cout<<farray[i][j]<<"\t";
+        }
+        cout<<endl;
+    }
+
+    
+
+}
+
 
