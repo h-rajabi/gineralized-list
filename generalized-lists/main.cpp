@@ -54,6 +54,7 @@ class generalizedList
         node *first;
         void sub_print_list(node* head);
         void clear_list(node* head);
+        int sub_dept_list(node* head);
     public:
         generalizedList(){
             this->first=NULL;
@@ -72,6 +73,9 @@ class generalizedList
         void print_list(){
             sub_print_list(this->first);
         };
+        int dept_list(){
+            return sub_dept_list(this->getFirst());
+        }
 
 };
 
@@ -86,18 +90,10 @@ node* create_current_row(node* first, int e);
 void create_current_row3(node* first,int c,int e);
 int main()
 {
-    generalizedList* obj1=new generalizedList();
-    obj1->setFirst(read_from_file());
-    cout<<"-----------------------\n";
-    obj1->print_list();
-    // node* head=obj1->getFirst();
-    // cout<<head->getVariable()<<"^"<<head->getLink()->getExp()<<"(";
-    // head=head->getLink()->getDlink();
-    // cout<<head->getVariable()<<"^"<<head->getLink()->getExp()<<"(";
-    // head=head->getLink()->getDlink();
-    // cout<<head->getVariable()<<"^"<<head->getLink()->getExp()<<"("<<head->getLink()->getCoef()<<")";
-
-    cout<<endl;
+    // generalizedList* obj1=new generalizedList();
+    // obj1->setFirst(read_from_file());
+    // cout<<"-----------------------\n";
+    // obj1->print_list();
     return 0;
 }
 
@@ -140,6 +136,20 @@ void generalizedList::add_head(char v){
     }
 }
 
+int generalizedList::sub_dept_list(node* head){
+    int dept =0;
+    while (head)
+    {
+        if (head->getTag()==2)
+        {
+            int dp=sub_dept_list(head->getDlink());
+            dept = max(dept,dp);
+        }
+        head=head->getLink();
+    }
+    return dept;
+}
+
 node* read_from_file(){
     ifstream InFile("in.txt");
     if(!InFile) {cout<<"error! :can not open file partner\n";}
@@ -161,91 +171,6 @@ node* read_from_file(){
     create_list(farray,varray,head,numR,numC);
     return head;
 }
-
-/*
-void create_list(vector<vector<int>>& a,vector<char>& v,node* head,int r,int c){
-    node *current=head;
-    node *tail=nullptr;
-    for (int i = 0; i < r; i++)
-    {
-        if (current->getTag() == 1)
-        {
-            current->setLink(new node(a[i][c]));
-            current=current->getLink();
-        }else if(current->getExp() != a[i][c])
-        {
-            current->setLink(new node(a[i][c]));
-            current=current->getLink();
-        }
-        
-        node *temp=nullptr;
-        for (int j = c-1; j >= 1; j--)
-        {   
-
-            if (current->getDlink())
-            {
-                temp=current->getDlink();
-            }else
-            {
-                temp = new node(v[j-1]);
-                current->setDlink(temp);
-            }
-            
-            if (temp->getLink())
-            {   
-                temp = temp->getLink();
-                if (j>1)
-                {   
-                    if (temp->getExp() != a[i][j])
-                    {
-                        temp->setLink(new node(a[i][j]));  
-                    }
-                }else
-                {   
-                    if (temp->getDlink())
-                    {
-                        temp=temp->getDlink();
-                        node* tail=temp->getLink();
-                        while (tail->getLink())
-                        {
-                            if (tail->getExp() == a[i][j])
-                            {   
-                                tail->setCoef(tail->getCoef()+a[i][j-1]);
-                                break;
-                            }
-                            else
-                            {
-                                tail=tail->getLink();
-                            }
-                        }
-                        if (!tail->getLink())
-                        {
-                            tail->setLink(new node(a[i][j-1],a[i][j]));
-                        }
-                        
-                    }else
-                    {
-                        temp->setDlink(new node(v[j-1]));
-                        temp=temp->getDlink();
-                        temp->setLink(new node(a[i][j-1],a[i][j]));
-                    }
-                }
-            }else
-            {
-                if (j>1)
-                {
-                    temp->setLink(new node(a[i][j]));
-                    temp=temp->getLink();   
-                }else
-                {   temp->setDlink(new node(v[j-1]));
-                    temp=temp->getDlink();
-                    temp->setLink(new node(a[i][j-1],a[i][j]));
-                }
-            }
-        }
-    }
-}
-*/
 
 node* find_current_node(node* first,int e){
     if (first->getExp()== e)
