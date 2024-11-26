@@ -34,6 +34,7 @@ class node
             this->link=NULL;
             this->dlink=NULL;
         }
+        void setTag(int t){this->tag=t;}
         void setVariable(char v){ this->variable=v; }
         void setCoef(float c){ this->coef=c; }
         void setExp(int e){ this->exp=e; }
@@ -90,10 +91,10 @@ node* create_current_row(node* first, int e);
 void create_current_row3(node* first,int c,int e);
 int main()
 {
-    // generalizedList* obj1=new generalizedList();
-    // obj1->setFirst(read_from_file());
-    // cout<<"-----------------------\n";
-    // obj1->print_list();
+    generalizedList* obj1=new generalizedList();
+    obj1->setFirst(read_from_file());
+    cout<<"-----------------------\n";
+    obj1->print_list();
     return 0;
 }
 
@@ -239,11 +240,12 @@ void create_list(vector<vector<int>>& a,vector<char>& v,node* head,int r,int c){
         for (int j = c; j >= 1; j--)
         {
             if (j>1)
-            {
+            {                   
                 if (tail->getVariable() == v[j-1])
                 {   
                     
                     temp = create_current_row(tail,a[i][j]);
+                    
                 }else
                 {
                     if (temp->getDlink())
@@ -256,6 +258,25 @@ void create_list(vector<vector<int>>& a,vector<char>& v,node* head,int r,int c){
                     }
                     temp=create_current_row(tail,a[i][j]);
                 }
+                if (!temp->getDlink())
+                {
+                    bool t=false;
+                    for (int k = j-1; k >= 1; k--)
+                    {
+                        if (a[i][k] != 0)
+                        {
+                            t= true;
+                            break;
+                        }
+                    }
+                    if (!t)
+                    {
+                        temp->setTag(3);
+                        temp->setCoef(a[i][0]);
+                    }
+                    
+                }
+                
             }else
             {
                 if (temp->getDlink())
