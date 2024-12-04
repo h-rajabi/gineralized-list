@@ -194,37 +194,7 @@ void generalizedList::sub_multiplication(node* head, int c) {
 
 node* generalizedList::sub_find_node(node* head, int c, int e, char v) {
     while (head) {
-        // اگر گره از نوع 1 (متغیر) است
-
-        // // اگر گره از نوع 2 است (توان بدون ضریب)
-        // if (head->getTag() == 2 && head->getExp() == e) {
-        //     if (c==0) {
-        //         return head; // اگر ضریب مهم نیست، گره پیدا شده است
-        //     }
-        //     // جستجو در زیرلیست گره
-        //     if (head->getDlink()) {
-        //         return sub_find_node(head->getDlink(), c, e, v);
-        //     }
-        // }
-
-        // // اگر گره از نوع 3 است (توان و ضریب)
-        // if (head->getTag() == 3 && head->getExp() == e) {
-        //     if (c==0 || head->getCoef() == c) {
-        //         return head; // گره با مشخصات پیدا شده است
-        //     }
-        // }
-
-        // حرکت به گره بعدی
-        if (head->getTag() == 1 && head->getVariable() == v) {
-            // جستجو در زیرلیست
-            return sub_find_node(head->getLink(), c, e, v);
-        }
-        
-        if (head->getTag()==2)
-        {
-            
-        }
-        
+                
         head = head->getLink();
     }
     return nullptr; // اگر گره پیدا نشد
