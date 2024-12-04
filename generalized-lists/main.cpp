@@ -56,6 +56,8 @@ class generalizedList
         void sub_print_list(node* head);
         void clear_list(node* head);
         int sub_dept_list(node* head);
+        node* sub_find_node(node* head, int c, int e, char v);
+        void sub_multiplication(node *head,int c);
     public:
         generalizedList(){
             this->first=NULL;
@@ -77,7 +79,12 @@ class generalizedList
         int dept_list(){
             return sub_dept_list(this->getFirst());
         }
-
+        node* find_node(int c,int e,char v){
+            return sub_find_node(this->first, c, e, v);
+        }
+        void multiplication(int c){
+            sub_multiplication(this->first,c);
+        }
 };
 
 node* read_from_file();
@@ -89,12 +96,21 @@ void create_list(vector<vector<int>>& a,vector<char>& v,node* head,int r,int c);
 node* find_current_node(node* first,int e);
 node* create_current_row(node* first, int e);
 void create_current_row3(node* first,int c,int e);
+
 int main()
 {
     generalizedList* obj1=new generalizedList();
     obj1->setFirst(read_from_file());
     cout<<"-----------------------\n";
     obj1->print_list();
+    cout<<endl;
+    // node* term = obj1->find_node(1,9,'y');
+    // if (term) {
+    //     cout << "Found term with coefficient: " << endl;
+    // } else {
+    //     cout << "Term not found." << endl;
+    // }
+    // cout<<endl;
     return 0;
 }
 
@@ -106,7 +122,7 @@ void generalizedList::sub_print_list(node* head){
             cout << "(";
             if (head->getDlink())
             {
-            sub_print_list(head->getDlink());
+                sub_print_list(head->getDlink());
             }else cout<<"error here";
             cout << ")"<<v << "^" << head->getExp();
         } else if (head->getTag() == 3) {
@@ -150,6 +166,69 @@ int generalizedList::sub_dept_list(node* head){
     }
     return dept;
 }
+/*
+void generalizedList::sub_multiplication(node* head,int c){
+    if (!head) return; 
+
+    if (head->getTag() == 3) {
+        head->setCoef(head->getCoef() * c);
+    }
+    sub_multiplication(head->getDlink(), c);
+
+    sub_multiplication(head->getLink(), c);
+}
+*/
+void generalizedList::sub_multiplication(node* head, int c) {
+    while (head) {
+        if (head->getTag() == 2) {
+            if (head->getDlink()) {
+                sub_multiplication(head->getDlink(), c);
+            }
+        }
+        else if (head->getTag() == 3) {
+            head->setCoef(head->getCoef() * c);
+        }
+        head = head->getLink();
+    }
+}
+
+node* generalizedList::sub_find_node(node* head, int c, int e, char v) {
+    while (head) {
+        // اگر گره از نوع 1 (متغیر) است
+
+        // // اگر گره از نوع 2 است (توان بدون ضریب)
+        // if (head->getTag() == 2 && head->getExp() == e) {
+        //     if (c==0) {
+        //         return head; // اگر ضریب مهم نیست، گره پیدا شده است
+        //     }
+        //     // جستجو در زیرلیست گره
+        //     if (head->getDlink()) {
+        //         return sub_find_node(head->getDlink(), c, e, v);
+        //     }
+        // }
+
+        // // اگر گره از نوع 3 است (توان و ضریب)
+        // if (head->getTag() == 3 && head->getExp() == e) {
+        //     if (c==0 || head->getCoef() == c) {
+        //         return head; // گره با مشخصات پیدا شده است
+        //     }
+        // }
+
+        // حرکت به گره بعدی
+        if (head->getTag() == 1 && head->getVariable() == v) {
+            // جستجو در زیرلیست
+            return sub_find_node(head->getLink(), c, e, v);
+        }
+        
+        if (head->getTag()==2)
+        {
+            
+        }
+        
+        head = head->getLink();
+    }
+    return nullptr; // اگر گره پیدا نشد
+}
 
 node* read_from_file(){
     ifstream InFile("in.txt");
@@ -169,12 +248,13 @@ node* read_from_file(){
     sort(farray.begin(),farray.end(),compare_row);
     vector<char> varray={'x','y','z','i','e','f','g','h'};
     node *head=new node(varray[numC-1]);
+    
     create_list(farray,varray,head,numR,numC);
     return head;
 }
 
 node* find_current_node(node* first,int e){
-    if (first->getExp()== e)
+    if (first->getExp() == e)
     {
         return first;
     }
@@ -183,27 +263,25 @@ node* find_current_node(node* first,int e){
     {
         if (first->getExp() == e)
         {   
-            // cout<<"find:" <<first<<endl;
-
             return first;
         }
         first = first->getLink();
     }
-
+    if (first->getExp() == e)
+    {
+        return first;
+    }
     first->setLink(new node(e));
-    // cout<<"not find:"<<first<<endl;
     return first->getLink();
 }
 node* create_current_row(node* first, int e){
     if (first->getLink())
     {   
-        // cout<<find_current_node(first->getLink(),e);
         return find_current_node(first->getLink(),e);
 
     }else
     {   
         first->setLink(new node(e));
-        // cout<<"first is :"<<first->getVariable()<<"ad :"<<first->getLink()<<endl;
         return first->getLink();
     }
 }
@@ -233,7 +311,6 @@ void create_current_row3(node* first,int c,int e){
 void create_list(vector<vector<int>>& a,vector<char>& v,node* head,int r,int c){
     node* temp=nullptr;
     node* tail=nullptr;
-    // cout<<"ad head :"<<head<<endl;
     for (int i = 0; i < r; i++)
     {
         tail=head;
@@ -258,6 +335,8 @@ void create_list(vector<vector<int>>& a,vector<char>& v,node* head,int r,int c){
                     }
                     temp=create_current_row(tail,a[i][j]);
                 }
+                // برای برسی اینکه ایا باید تگ ۳ شود یا خیر 
+                // تنها زمانی اتفاق میافتد که گره ما زیر مجموعه نداشته باشد 
                 if (!temp->getDlink())
                 {
                     bool t=false;
