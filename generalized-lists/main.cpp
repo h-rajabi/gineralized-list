@@ -2,9 +2,10 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <string>
+#include <cmath>
 
 using namespace std;
-
 
 class node
 {
@@ -48,6 +49,12 @@ class node
         node* getDlink(){return this->dlink;}
 };
 
+struct ge
+{
+    node* head;
+    int size;
+};
+
 class generalizedList
 {
     private:
@@ -59,6 +66,7 @@ class generalizedList
         node* sub_find_node(node* head, int c, int e, char v);
         node* sub_find_before_node(node* head, int c, int e, char v);
         void sub_multiplication(node *head,int c);
+        int sub_amount_list(node* head, vector<int>& v, int d);
     public:
         generalizedList(){
             this->first=NULL;
@@ -67,7 +75,7 @@ class generalizedList
         ~generalizedList(){
             clear_list(first);
         }
-        void setSize(){this->size = this->size+1; };
+        void setSize(int s){this->size =s; };
         void setFirst(node* f){this->first=f;};
         int getSize(){return this->size;};
         node* getFirst(){return this->first;};
@@ -87,35 +95,32 @@ class generalizedList
             sub_multiplication(this->first,c);
         }
         void delete_node(int c, int e, char v);
+        void amount_list();
 };
 
-node* read_from_file();
+ge read_from_file(string f);
 void sort_array();
 bool compare_row(const vector<int>& row1, const vector<int>& row2){
     return row1.back() > row2.back();
 };
-void create_list(vector<vector<int>>& a,vector<char>& v,node* head,int r,int c);
+void create_list(vector<vector<int>>& a,node* head,int r,int c);
 node* find_current_node(node* first,int e);
 node* create_current_row(node* first, int e);
 void create_current_row3(node* first,int c,int e);
 
+vector<char> varray={'x','y','z','i','e','f','g','h'};
+
 int main()
 {
     generalizedList* obj1=new generalizedList();
-    obj1->setFirst(read_from_file());
+    ge result=read_from_file("in.txt");
+    obj1->setFirst(result.head);
+    obj1->setSize(result.size);
     cout<<"-----------------------\n";
     obj1->print_list();
     cout<<endl;
-    // node* term = obj1->find_node(4,1,'x');
-    // if (term) {
-    //     cout << "Found term with coefficient: " << endl;
-    // } else {
-    //     cout << "Term not found." << endl;
-    // }
-    // cout<<endl;
-    obj1->delete_node(0,2,'z');
-    cout<<"-----------------------\n";
-    obj1->print_list();
+    
+    obj1->amount_list();
     return 0;
 }
 
@@ -269,9 +274,44 @@ node* generalizedList::sub_find_before_node(node* head, int c, int e, char v) {
     return nullptr; 
 }
 
-node* read_from_file(){
-    ifstream InFile("in.txt");
+void generalizedList::amount_list(){
+    int s=this->getSize();
+    vector<int> narray(s);
+    for (int i = 0; i < s ; i++)
+    {
+        cout<<"enter "<<varray[i]<<":";
+        cin>>narray[i];
+    }
+    int sum =sub_amount_list(this->getFirst(),narray,s);
+    cout<<"amount list for ";
+    for (int i = 0; i < s; i++)
+    {
+        cout<<varray[i]<<":"<<narray[i]<<" ";
+    }
+    cout<<" is: "<<sum<<endl;
+}
+
+int generalizedList::sub_amount_list(node* head, vector<int>& v, int d){
+    int a =v[d-1];
+    int sum=0;
+    while (head)
+    {
+        if (head->getTag()==2)
+        {
+            sum=sum+(pow(a,head->getExp()) * sub_amount_list(head->getDlink(),v,d-1));
+        }else if (head->getTag()==3)
+        {
+            sum=sum+(pow(a,head->getExp())*head->getCoef());
+        }
+        head=head->getLink();
+    }
+    return sum;
+}
+
+ge read_from_file(string f){
+    ifstream InFile(f);
     if(!InFile) {cout<<"error! :can not open file partner\n";}
+    ge m;
     int numC,numR;
     InFile >> numC >> numR;
     vector<vector<int>> farray(numR,vector<int>(numC+1));
@@ -285,11 +325,12 @@ node* read_from_file(){
     
     InFile.close();    
     sort(farray.begin(),farray.end(),compare_row);
-    vector<char> varray={'x','y','z','i','e','f','g','h'};
     node *head=new node(varray[numC-1]);
     
-    create_list(farray,varray,head,numR,numC);
-    return head;
+    create_list(farray, head, numR, numC);
+    m.head=head;
+    m.size=numC;
+    return m;
 }
 
 node* find_current_node(node* first,int e){
@@ -347,7 +388,7 @@ void create_current_row3(node* first,int c,int e){
     }
 }
 
-void create_list(vector<vector<int>>& a,vector<char>& v,node* head,int r,int c){
+void create_list(vector<vector<int>>& a, node* head, int r, int c){
     node* temp=nullptr;
     node* tail=nullptr;
     for (int i = 0; i < r; i++)
@@ -357,7 +398,7 @@ void create_list(vector<vector<int>>& a,vector<char>& v,node* head,int r,int c){
         {
             if (j>1)
             {                   
-                if (tail->getVariable() == v[j-1])
+                if (tail->getVariable() == varray[j-1])
                 {   
                     
                     temp = create_current_row(tail,a[i][j]);
@@ -369,7 +410,7 @@ void create_list(vector<vector<int>>& a,vector<char>& v,node* head,int r,int c){
                         tail=temp->getDlink();
                     }else
                     {
-                        temp->setDlink(new node(v[j-1]));
+                        temp->setDlink(new node(varray[j-1]));
                         tail=temp->getDlink();
                     }
                     temp=create_current_row(tail,a[i][j]);
@@ -402,7 +443,7 @@ void create_list(vector<vector<int>>& a,vector<char>& v,node* head,int r,int c){
                     tail=temp->getDlink();
                 }else
                 {
-                    temp->setDlink(new node(v[j-1]));
+                    temp->setDlink(new node(varray[j-1]));
                     tail=temp->getDlink();
                 }
                 create_current_row3(tail,a[i][j-1],a[i][j]);                
