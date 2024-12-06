@@ -57,6 +57,7 @@ class generalizedList
         void clear_list(node* head);
         int sub_dept_list(node* head);
         node* sub_find_node(node* head, int c, int e, char v);
+        node* sub_find_before_node(node* head, int c, int e, char v);
         void sub_multiplication(node *head,int c);
     public:
         generalizedList(){
@@ -85,6 +86,7 @@ class generalizedList
         void multiplication(int c){
             sub_multiplication(this->first,c);
         }
+        void delete_node(int c, int e, char v);
 };
 
 node* read_from_file();
@@ -104,13 +106,16 @@ int main()
     cout<<"-----------------------\n";
     obj1->print_list();
     cout<<endl;
-    // node* term = obj1->find_node(1,9,'y');
+    // node* term = obj1->find_node(4,1,'x');
     // if (term) {
     //     cout << "Found term with coefficient: " << endl;
     // } else {
     //     cout << "Term not found." << endl;
     // }
     // cout<<endl;
+    obj1->delete_node(0,2,'z');
+    cout<<"-----------------------\n";
+    obj1->print_list();
     return 0;
 }
 
@@ -193,11 +198,75 @@ void generalizedList::sub_multiplication(node* head, int c) {
 }
 
 node* generalizedList::sub_find_node(node* head, int c, int e, char v) {
+    char x = head->getVariable();
     while (head) {
-                
+        if (x==v)
+        {
+            if (c==0)
+            {
+                if (head->getTag()==2)
+                {
+                    if (head->getExp() == e) return head;
+                }
+            }else
+            {
+                if (head->getTag()==3)
+                {
+                    if (head->getCoef()==c && head->getExp()==e) return head;
+                }
+            }
+        }else
+        {
+            if (head->getTag()==2)
+            {
+                return sub_find_node(head->getDlink(),c,e,v);
+            }
+        }
         head = head->getLink();
     }
-    return nullptr; // اگر گره پیدا نشد
+    return nullptr; 
+}
+
+void generalizedList::delete_node(int c, int e, char v){
+    node *t=sub_find_before_node(this->getFirst(),c,e,v);
+    if (t) {
+        node* temp=t->getLink();
+        t->setLink(temp->getLink());
+        clear_list(temp->getDlink());
+        delete temp;
+        cout<<"done"<<endl;
+    }
+    else cout<< "not find"<<endl;
+}
+
+node* generalizedList::sub_find_before_node(node* head, int c, int e, char v) {
+    char x = head->getVariable();
+    while (head->getLink()) {
+        if (x==v)
+        {
+            if (c==0)
+            {
+                if (head->getLink()->getTag()==2)
+                {
+                    if (head->getLink()->getExp() == e) return head;
+                }
+            }else
+            {
+                if (head->getLink()->getTag()==3)
+                {
+                    if (head->getLink()->getCoef()==c && head->getLink()->getExp()==e) return head;
+                }
+            }
+        }else
+        {
+            if (head->getLink()->getTag()==2)
+            {
+                return sub_find_node(head->getLink()->getDlink(),c,e,v);
+            }
+        }
+        head = head->getLink();
+    }
+    return nullptr; 
 }
 
 node* read_from_file(){
