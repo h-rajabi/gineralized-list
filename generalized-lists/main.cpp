@@ -107,6 +107,7 @@ void create_list(vector<vector<int>>& a,node* head,int r,int c);
 node* find_current_node(node* first,int e);
 node* create_current_row(node* first, int e);
 void create_current_row3(node* first,int c,int e);
+void equal_list(node* head1,node* head2);
 
 vector<char> varray={'x','y','z','i','e','f','g','h'};
 
@@ -120,7 +121,6 @@ int main()
     obj1->print_list();
     cout<<endl;
     
-    obj1->amount_list();
     return 0;
 }
 
@@ -176,6 +176,7 @@ int generalizedList::sub_dept_list(node* head){
     }
     return dept;
 }
+
 /*
 void generalizedList::sub_multiplication(node* head,int c){
     if (!head) return; 
@@ -188,6 +189,7 @@ void generalizedList::sub_multiplication(node* head,int c){
     sub_multiplication(head->getLink(), c);
 }
 */
+
 void generalizedList::sub_multiplication(node* head, int c) {
     while (head) {
         if (head->getTag() == 2) {
@@ -324,7 +326,7 @@ ge read_from_file(string f){
     }
     
     InFile.close();    
-    sort(farray.begin(),farray.end(),compare_row);
+    // sort(farray.begin(),farray.end(),compare_row);
     node *head=new node(varray[numC-1]);
     
     create_list(farray, head, numR, numC);
@@ -354,6 +356,7 @@ node* find_current_node(node* first,int e){
     first->setLink(new node(e));
     return first->getLink();
 }
+
 node* create_current_row(node* first, int e){
     if (first->getLink())
     {   
@@ -365,6 +368,7 @@ node* create_current_row(node* first, int e){
         return first->getLink();
     }
 }
+
 void create_current_row3(node* first,int c,int e){
     if (first->getLink())
     {   
@@ -450,4 +454,29 @@ void create_list(vector<vector<int>>& a, node* head, int r, int c){
             }
         }
     }
+}
+
+bool equal_list(node* head1,node* head2){
+    if (!head1 || !head2) return false;
+    bool temp=true;
+    while (head1 && head2)
+    {   
+        if(head1->getTag()!=head2->getTag()) return false;
+        else if (head1->getTag()==1 && head2->getTag()==1)
+            if (head1->getVariable() != head2->getVariable()) return false;
+        else if (head1->getTag()==2 && head2->getTag() == 2)
+        {
+            if(head1->getExp != head2->getExp()) return false;
+            temp = equal_list(head1->getDlink(),head2->getDlink());
+        }else if (head1->getTag()==3 && head2->getTag()==3)
+        {
+            if(head1->getCoef() != head2->getCoef() || head1->getExp()!=head2->getExp()) return false;
+        }
+        if (!temp) return false;
+        head1=head1->getLink();
+        head2=head2->getLink();
+    }
+
+    if (!head1 && !head2) return true;
+    return false;
 }
