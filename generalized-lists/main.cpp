@@ -84,6 +84,7 @@ class generalizedList
         void add_h(float c,int e);
         void print_list(){
             sub_print_list(this->first);
+            cout<<endl;
         };
         int dept_list(){
             return sub_dept_list(this->getFirst());
@@ -107,19 +108,23 @@ void create_list(vector<vector<int>>& a,node* head,int r,int c);
 node* find_current_node(node* first,int e);
 node* create_current_row(node* first, int e);
 void create_current_row3(node* first,int c,int e);
-void equal_list(node* head1,node* head2);
+bool equal_list(node* head1,node* head2);
+bool check_equal_list(generalizedList* obj1,generalizedList* obj2);
+void check_equal_object();
+
 
 vector<char> varray={'x','y','z','i','e','f','g','h'};
 
 int main()
 {
-    generalizedList* obj1=new generalizedList();
-    ge result=read_from_file("in.txt");
-    obj1->setFirst(result.head);
-    obj1->setSize(result.size);
-    cout<<"-----------------------\n";
-    obj1->print_list();
-    cout<<endl;
+    // generalizedList* obj1=new generalizedList();
+    // ge result=read_from_file("in.txt");
+    // obj1->setFirst(result.head);
+    // obj1->setSize(result.size);
+    // cout<<"-----------------------\n";
+    // obj1->print_list();
+    // cout<<endl;
+    check_equal_object();
     
     return 0;
 }
@@ -456,27 +461,61 @@ void create_list(vector<vector<int>>& a, node* head, int r, int c){
     }
 }
 
-bool equal_list(node* head1,node* head2){
+bool equal_list(node* head1, node* head2) {
+    if (!head1 && !head2) return true;
     if (!head1 || !head2) return false;
-    bool temp=true;
-    while (head1 && head2)
-    {   
-        if(head1->getTag()!=head2->getTag()) return false;
-        else if (head1->getTag()==1 && head2->getTag()==1)
+
+    while (head1 && head2) {
+        if (head1->getTag() != head2->getTag()) return false;
+
+        if (head1->getTag() == 1) {
             if (head1->getVariable() != head2->getVariable()) return false;
-        else if (head1->getTag()==2 && head2->getTag() == 2)
-        {
-            if(head1->getExp != head2->getExp()) return false;
-            temp = equal_list(head1->getDlink(),head2->getDlink());
-        }else if (head1->getTag()==3 && head2->getTag()==3)
-        {
-            if(head1->getCoef() != head2->getCoef() || head1->getExp()!=head2->getExp()) return false;
+        } else if (head1->getTag() == 2) {
+            if (head1->getExp() != head2->getExp()) return false;
+            if (!equal_list(head1->getDlink(), head2->getDlink())) return false;
+        } else if (head1->getTag() == 3) {
+            if (head1->getCoef() != head2->getCoef() || head1->getExp() != head2->getExp()) return false;
         }
-        if (!temp) return false;
-        head1=head1->getLink();
-        head2=head2->getLink();
+
+        head1 = head1->getLink();
+        head2 = head2->getLink();
     }
 
-    if (!head1 && !head2) return true;
-    return false;
+    return !head1 && !head2;
 }
+
+bool check_equal_list(generalizedList* obj1,generalizedList* obj2){
+    if( !obj1->getFirst() || !obj2->getFirst()) return false;
+    else if(obj1->getSize()!=obj2->getSize()) return false;
+    return equal_list(obj1->getFirst(),obj2->getFirst()); 
+}
+
+void check_equal_object(){
+    string f1,f2;
+    // cout<<"enter name file one:";
+    // cin>>f1;
+    // cout<<"enter name file two:";
+    // cin>>f2;
+    f1="in.txt";
+    f2="in2.txt";
+    generalizedList* obj1=new generalizedList();
+    generalizedList* obj2=new generalizedList();
+    ge result;
+    result=read_from_file(f1);
+    obj1->setFirst(result.head);
+    obj1->setSize(result.size);
+    result=read_from_file(f2);
+    obj2->setFirst(result.head);
+    obj2->setSize(result.size);
+    cout<<"----------------------------------\n";
+    cout<<"list 1 : ";
+    obj1->print_list();
+    cout<<"list 2 : ";
+    obj2->print_list();
+    cout<<"----------------------------------\n";
+    
+    bool resultCheck =check_equal_list(obj1,obj2);
+    if (resultCheck) cout<<"both list is equal.\n";
+    else cout<<"both list is not equal!\n";
+}
+
