@@ -67,6 +67,7 @@ class generalizedList
         node* sub_find_before_node(node* head, int c, int e, char v);
         void sub_multiplication(node *head,int c);
         int sub_amount_list(node* head, vector<int>& v, int d);
+        node* sub_create_copy_list(node* head);
     public:
         generalizedList(){
             this->first=NULL;
@@ -97,6 +98,7 @@ class generalizedList
         }
         void delete_node(int c, int e, char v);
         void amount_list();
+        node* create_copy_list();
 };
 
 ge read_from_file(string f);
@@ -111,20 +113,23 @@ void create_current_row3(node* first,int c,int e);
 bool equal_list(node* head1,node* head2);
 bool check_equal_list(generalizedList* obj1,generalizedList* obj2);
 void check_equal_object();
-
+void create_copy(generalizedList *obj);
 
 vector<char> varray={'x','y','z','i','e','f','g','h'};
 
 int main()
 {
-    // generalizedList* obj1=new generalizedList();
-    // ge result=read_from_file("in.txt");
-    // obj1->setFirst(result.head);
-    // obj1->setSize(result.size);
-    // cout<<"-----------------------\n";
-    // obj1->print_list();
-    // cout<<endl;
-    check_equal_object();
+    generalizedList* obj1=new generalizedList();
+    ge result=read_from_file("in.txt");
+    obj1->setFirst(result.head);
+    obj1->setSize(result.size);
+    cout<<"-----------------------\n";
+    obj1->print_list();
+    cout<<endl;
+    cout<<"-----------------------\n";
+
+    create_copy(obj1);
+    // check_equal_object();
     
     return 0;
 }
@@ -313,6 +318,34 @@ int generalizedList::sub_amount_list(node* head, vector<int>& v, int d){
         head=head->getLink();
     }
     return sum;
+}
+
+node* generalizedList::sub_create_copy_list(node* head){
+    if (!head) return nullptr;
+    
+    node* newHead=new node(head->getVariable());
+    node* current=newHead;
+    while (head)
+    {
+        if (head->getTag()==2)
+        {
+            node* temp=new node(head->getExp());
+            temp->setDlink(sub_create_copy_list(head->getDlink()));
+            current->setLink(temp);
+            current=current->getLink();
+        }else if (head->getTag() == 3)
+        {
+            node* temp=new node(head->getCoef(),head->getExp());
+            current->setLink(temp);
+            current=current->getLink();
+        }
+        head=head->getLink();
+    }
+    return newHead;    
+}
+
+node* generalizedList::create_copy_list(){
+    return sub_create_copy_list(this->getFirst());
 }
 
 ge read_from_file(string f){
@@ -519,3 +552,9 @@ void check_equal_object(){
     else cout<<"both list is not equal!\n";
 }
 
+void create_copy(generalizedList* obj){
+    generalizedList* newObject = new generalizedList();
+    newObject->setSize(obj->getSize());
+    newObject->setFirst(obj->create_copy_list());
+    newObject->print_list();
+}
